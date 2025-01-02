@@ -7,5 +7,4 @@ firebase-admin
 werkzeug
 gunicorn
 scikit-learn
-gdown
-gdown
+gdown==4.6.0

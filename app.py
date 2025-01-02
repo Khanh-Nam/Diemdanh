@@ -156,37 +156,43 @@ def load_student_data(directory):
         else:
             print(f"Filename {filename} is invalid, missing information.")
     return student_data
-
-def load_student_data(drive_folder_url):
-    # Lấy File ID từ URL của Google Drive
-    folder_id = drive_folder_url.split('/')[-2]  # Lấy phần trước 'view' hoặc 'folders'
-
-    # Tạo URL tải folder từ Google Drive
-    download_url = f'https://drive.google.com/uc?id={folder_id}'
+def load_student_data_from_s3(bucket_name, folder_path):
+    student_data = []
     
-    # Thư mục tạm để lưu ảnh
-    output_dir = '/tmp/student_data/'
+    # Khởi tạo client S3
+    s3 = boto3.client('s3')
 
-    # Kiểm tra thư mục đã tồn tại chưa, nếu chưa thì tạo
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
+    # Lấy danh sách các đối tượng (ảnh) trong thư mục
+    response = s3.list_objects_v2(Bucket=bucket_name, Prefix=folder_path)
 
-    # Dùng gdown để tải ảnh vào thư mục tạm
-    gdown.download_folder(download_url, quiet=False, output=output_dir)
-
-    # Đọc và xử lý ảnh từ thư mục đã tải về
-    student_images = []
-    for root, dirs, files in os.walk(output_dir):
-        for file in files:
-            if file.endswith(('.jpg', '.png')):
-                student_images.append(os.path.join(root, file))
+    # Lặp qua các tệp trong thư mục S3
+    for obj in response.get('Contents', []):
+        file_name = obj['Key']
+        
+        # Kiểm tra nếu tệp là ảnh (có phần mở rộng đúng)
+        if file_name.endswith(('.jpg', '.jpeg', '.png', '.bmp')):
+            try:
+                # Tải ảnh từ S3
+                img_obj = s3.get_object(Bucket=bucket_name, Key=file_name)
+                
+                # Đọc dữ liệu ảnh từ S3 vào bộ nhớ
+                img_data = img_obj['Body'].read()
+                
+                # Mở ảnh từ bộ nhớ và thêm vào danh sách
+                image = Image.open(BytesIO(img_data))
+                student_data.append(image)
+            except Exception as e:
+                print(f"Không thể tải ảnh {file_name} từ S3: {e}")
     
-    return student_images
-drive_folder_url = 'https://drive.google.com/drive/folders/10NScMC2m3pGHIEug96jkvXyDRTGriDp3?usp=sharing'
+    return student_data
 
-# Gọi hàm load_student_data để tải ảnh
-student_data = load_student_data(drive_folder_url)
+# Sử dụng hàm load_student_data_from_s3 để tải ảnh từ S3
+bucket_name = 'nam-bucket222'
+folder_path = 'anhsinhvien/'  # Đường dẫn đến thư mục ảnh trên S3
+student_data = load_student_data_from_s3(bucket_name, folder_path)
 # Dự đoán sinh viên từ ảnh đã cắt
+
+
 def predict_student(face_img):
     embedding = get_embedding_deepface(face_img)
     if embedding is None:

@@ -6,3 +6,4 @@ tensorflow
 firebase-admin
 werkzeug
 gunicorn
+scikit-learn

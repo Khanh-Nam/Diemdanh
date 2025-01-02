@@ -157,7 +157,10 @@ def load_student_data(directory):
             print(f"Filename {filename} is invalid, missing information.")
     return student_data
 
-student_data = load_student_data(r'C:\Users\admin\Desktop\video\anhsinhvien')
+drive_folder_url = 'https://drive.google.com/drive/folders/10NScMC2m3pGHIEug96jkvXyDRTGriDp3?usp=sharing'
+
+# Gọi hàm load_student_data để tải ảnh
+student_data = load_student_data(drive_folder_url)
 
 # Dự đoán sinh viên từ ảnh đã cắt
 def predict_student(face_img):
@@ -632,21 +635,21 @@ def add_student():
         return redirect(url_for('admin'))  # Chuyển đến trang admin sau khi thêm học sinh
 
     return render_template('add_student.html')
-save_path = "C:/Users/admin/Desktop/video/anhsinhvien/"
+# save_path = "C:/Users/admin/Desktop/video/anhsinhvien/"
 
-@app.route('/save-image', methods=['POST'])
-def save_image():
-    data = request.get_json()
-    image_data = data['image']
-    file_name = data['fileName']
-    image_path = os.path.join(save_path, file_name)
+# @app.route('/save-image', methods=['POST'])
+# def save_image():
+#     data = request.get_json()
+#     image_data = data['image']
+#     file_name = data['fileName']
+#     image_path = os.path.join(save_path, file_name)
 
-    try:
-        with open(image_path, "wb") as f:
-            f.write(base64.b64decode(image_data.split(",")[1]))
-        return jsonify({"message": "Image saved successfully"})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+#     try:
+#         with open(image_path, "wb") as f:
+#             f.write(base64.b64decode(image_data.split(",")[1]))
+#         return jsonify({"message": "Image saved successfully"})
+#     except Exception as e:
+#         return jsonify({"error": str(e)}), 500
 @app.route('/user_info')
 def user_info():
     if 'username' in session:

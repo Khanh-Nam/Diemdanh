@@ -18,8 +18,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Replace with a real secret key for session management
+config_path = os.path.join(os.path.dirname(__file__), 'config', 'student-identification-s-dd4a5-firebase-adminsdk-u2pbn-57adc39235.json')
+
 # Khởi tạo Firebase Admin SDK
-SERVICE_ACCOUNT_PATH = r'C:\Users\admin\Downloads\student-identification-s-dd4a5-firebase-adminsdk-u2pbn-57adc39235.json'
+SERVICE_ACCOUNT_PATH = config_path
 
 # URL của Realtime Database
 REALTIME_DB_URL = 'https://student-identification-s-dd4a5-default-rtdb.firebaseio.com'
@@ -63,12 +65,19 @@ realtime_ref = get_realtime_db_ref("attendance")  # Realtime Database (attendanc
 class_ref = get_realtime_db_ref("class_information")  # Realtime Database (class_information branch)
 # Kết nối Firestore
 def initialize_firestore():
-    from firebase_admin import credentials, initialize_app
-    cred = credentials.Certificate(r'C:\Users\admin\Downloads\student-identification-s-dd4a5-firebase-adminsdk-u2pbn-57adc39235.json')
+    # Đọc đường dẫn tới tệp JSON cấu hình Firebase từ thư mục config
+    config_path = os.path.join(os.path.dirname(__file__), 'config', 'student-identification-s-dd4a5-firebase-adminsdk-u2pbn-57adc39235.json')
+
+    # Sử dụng tệp cấu hình Firebase
+    cred = credentials.Certificate(config_path)
+    
+    # Kiểm tra nếu chưa khởi tạo Firebase app, sẽ khởi tạo app mới
     if not firebase_admin._apps:
-        initialize_app(cred)
+        firebase_admin.initialize_app(cred)
+
     return firestore.client()
 
+# Khởi tạo Firestore DB
 firestore_db = initialize_firestore()
 @app.route('/class-info', methods=['GET'])
 def class_info_page():

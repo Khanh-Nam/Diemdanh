@@ -156,41 +156,9 @@ def load_student_data(directory):
         else:
             print(f"Filename {filename} is invalid, missing information.")
     return student_data
-def load_student_data_from_s3(bucket_name, folder_path):
-    student_data = []
-    
-    # Khởi tạo client S3
-    s3 = boto3.client('s3')
 
-    # Lấy danh sách các đối tượng (ảnh) trong thư mục
-    response = s3.list_objects_v2(Bucket=bucket_name, Prefix=folder_path)
-
-    # Lặp qua các tệp trong thư mục S3
-    for obj in response.get('Contents', []):
-        file_name = obj['Key']
-        
-        # Kiểm tra nếu tệp là ảnh (có phần mở rộng đúng)
-        if file_name.endswith(('.jpg', '.jpeg', '.png', '.bmp')):
-            try:
-                # Tải ảnh từ S3
-                img_obj = s3.get_object(Bucket=bucket_name, Key=file_name)
-                
-                # Đọc dữ liệu ảnh từ S3 vào bộ nhớ
-                img_data = img_obj['Body'].read()
-                
-                # Mở ảnh từ bộ nhớ và thêm vào danh sách
-                image = Image.open(BytesIO(img_data))
-                student_data.append(image)
-            except Exception as e:
-                print(f"Không thể tải ảnh {file_name} từ S3: {e}")
-    
-    return student_data
-
-# Sử dụng hàm load_student_data_from_s3 để tải ảnh từ S3
-bucket_name = 'namth-bucket'
-folder_path = 'anhsinhvien/'  # Đường dẫn đến thư mục ảnh trên S3
-student_data = load_student_data_from_s3(bucket_name, folder_path)
-# Dự đoán sinh viên từ ảnh đã cắt
+relative_path = os.path.join(os.getcwd(),'anhsinhvien')
+student_data = load_student_data(relative_path)
 
 
 def predict_student(face_img):

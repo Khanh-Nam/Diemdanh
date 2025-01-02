@@ -187,7 +187,7 @@ def load_student_data_from_s3(bucket_name, folder_path):
     return student_data
 
 # Sử dụng hàm load_student_data_from_s3 để tải ảnh từ S3
-bucket_name = 'nam-bucket222'
+bucket_name = 'namth-bucket'
 folder_path = 'anhsinhvien/'  # Đường dẫn đến thư mục ảnh trên S3
 student_data = load_student_data_from_s3(bucket_name, folder_path)
 # Dự đoán sinh viên từ ảnh đã cắt

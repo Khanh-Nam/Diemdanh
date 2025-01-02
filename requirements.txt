@@ -1,0 +1,8 @@
+flask
+flask-mail
+opencv-python
+numpy
+tensorflow
+firebase-admin
+werkzeug
+gunicorn

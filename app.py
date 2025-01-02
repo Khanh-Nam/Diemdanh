@@ -13,7 +13,7 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras import layers, models
 import firebase_admin
 from firebase_admin import credentials, db, firestore
-
+import boto3
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)

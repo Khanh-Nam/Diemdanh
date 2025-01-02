@@ -124,8 +124,8 @@ class DeepFaceClassifier(models.Model):
         return self.fc(x)
 
 # Tải mô hình DeepFace embedding và mô hình phân loại
-deepface_model_path = r'C:\Users\admin\PycharmProjects\Diemdanh\tiensuly\checkpoints\classification_model.h5'
-label_encoder_path = r'C:\Users\admin\PycharmProjects\Diemdanh\tiensuly\checkpoints\label_encoder.pkl'
+deepface_model_path = os.path.join(os.path.dirname(__file__), 'tiensuly', 'checkpoints', 'classification_model.h5')
+label_encoder_path = os.path.join(os.path.dirname(__file__), 'tiensuly', 'checkpoints', 'label_encoder.pkl')
 
 # Load mô hình từ DeepFace
 # from tensorflow.keras.models import load_model

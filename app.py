@@ -157,11 +157,35 @@ def load_student_data(directory):
             print(f"Filename {filename} is invalid, missing information.")
     return student_data
 
+def load_student_data(drive_folder_url):
+    # Lấy File ID từ URL của Google Drive
+    folder_id = drive_folder_url.split('/')[-2]  # Lấy phần trước 'view' hoặc 'folders'
+
+    # Tạo URL tải folder từ Google Drive
+    download_url = f'https://drive.google.com/uc?id={folder_id}'
+    
+    # Thư mục tạm để lưu ảnh
+    output_dir = '/tmp/student_data/'
+
+    # Kiểm tra thư mục đã tồn tại chưa, nếu chưa thì tạo
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    # Dùng gdown để tải ảnh vào thư mục tạm
+    gdown.download_folder(download_url, quiet=False, output=output_dir)
+
+    # Đọc và xử lý ảnh từ thư mục đã tải về
+    student_images = []
+    for root, dirs, files in os.walk(output_dir):
+        for file in files:
+            if file.endswith(('.jpg', '.png')):
+                student_images.append(os.path.join(root, file))
+    
+    return student_images
 drive_folder_url = 'https://drive.google.com/drive/folders/10NScMC2m3pGHIEug96jkvXyDRTGriDp3?usp=sharing'
 
 # Gọi hàm load_student_data để tải ảnh
 student_data = load_student_data(drive_folder_url)
-
 # Dự đoán sinh viên từ ảnh đã cắt
 def predict_student(face_img):
     embedding = get_embedding_deepface(face_img)
